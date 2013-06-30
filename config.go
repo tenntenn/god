@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+
+	"code.google.com/p/goauth2/oauth"
+	"code.google.com/p/google-api-go-client/drive/v2"
 )
 
 type Config struct {
@@ -11,7 +14,7 @@ type Config struct {
 	ClientEmail             string   `json:"client_email"`
 	RedirectURIs            []string `json:"redirect_uris"`
 	ClientX509CertURL       string   `json:"client_x509_cert_url"`
-	ClientID                string   `json:"client_id"`
+	ClientId                string   `json:"client_id"`
 	AuthProviderX509CertURL string   `json:"auth_provider_x509_cert_url"`
 }
 
@@ -27,4 +30,14 @@ func NewConfigFromJSON(jsonStr []byte) *Config {
 	json.Unmarshal(jsonStr2, &conf)
 
 	return &conf
+}
+
+func (c *config) OAuthConfig() *oauth.Config {
+	var config = &oauth.Config{
+		ClientId:     c.ClientId,
+		ClientSecret: c.ClientSecret,
+		Scope:        drive.DriveScope,
+		AuthURL:      c.AuthURI,
+		TokenURL:     c.TokenURI,
+	}
 }
